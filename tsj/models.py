@@ -17,13 +17,13 @@ class YoutubeLink(models.Model):
     Main link class
     """
     # url is string that consists of symbols in parameter v
-    url = models.ChardField(max_length=255)
-    video_cache = models.CharField(max_length=255, null=True, blank=True)    
+    url = models.CharField(max_length=255)
+    video_cache = models.CharField(max_length=255, null=True, blank=True)
 
-    """
-    We parse youtube link and set direct link to video file
-    """
     def get_video_link(self):
+        """
+        We parse youtube link and set direct link to video file
+        """
         if self.video_cache:
             return self.video_cache
         else:
@@ -40,7 +40,7 @@ class YoutubeLink(models.Model):
             for fmt_chk in tmp_list:
                 if len(fmt_chk) == 0 or not fmt_chk.startswith('url=') and 'flv' not in fmt_chk:
                     continue
-              vid_list.append(fmt_chk[4:])
+                vid_list.append(fmt_chk[4:])
 
             try:
                 self.video_cache = vid_list[0]
@@ -51,5 +51,8 @@ class YoutubeLink(models.Model):
             return self.video_cache
 
     def renderer(self):
+        """
+        Renders link (HTML) view
+        """
         raise NotImplementedError
 
