@@ -141,3 +141,13 @@ class LimitedLink(models.Model):
         """
         self._log_usage()
         return self.content_object
+
+    def get_object_type(self):
+        """
+        Return container object type
+        """
+        return self.content_object.__class__
+
+    @models.permalink
+    def get_renderer_url(self):
+        return 'tsj_access_youtube_link', (), {'link_slug': self.slug}

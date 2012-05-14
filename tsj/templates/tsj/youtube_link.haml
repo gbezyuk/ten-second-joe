@@ -1,0 +1,15 @@
+- extends 'tsj/link.haml'
+- load i18n
+
+- block object_rendering
+    <script type="text/javascript" src="{{ MEDIA_URL }}swfobject/swfobject.js"></script>
+    <script type="text/javascript">
+        var flashvars = {};
+        flashvars.videoPath = "{{ link.get_renderer_url }}";
+        var params = {};
+        var attributes = {};
+        swfobject.embedSWF("{{ MEDIA_URL }}pl.swf", "myAlternativeContent", "300", "300", "9.0.0", false, flashvars, params, attributes);
+    </script>
+    #myAlternativeContent
+        %a{'href': 'http://www.adobe.com/go/getflashplayer'}
+            %img{'src': 'http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif', 'alt': 'Get Adobe Flash player'}
