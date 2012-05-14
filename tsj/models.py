@@ -1,15 +1,20 @@
-# encoding: utf-8
+"""
+Studio: ActionLearning.Ru
+Authors: Andrew Sinitsyn, Grigoriy Beziuk
+Project: Ten Second Joe
+Module: Ten Second Joe
+Part: Views
+"""
 from django.db import models
 import urllib
 import sys
-
 
 class AppURLopener(urllib.FancyURLopener):
     version = "Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.13) Gecko/20101230 Mandriva Linux/1.9.2.13-0.2mdv2010.2 (2010.2) Firefox/3.6.13"
 
 class Link(models.Model):
     """
-    main link class
+    Main link class
     """
     url = models.ChardField(max_length=255)
     video_cache = models.CharField(max_length=255, null=True, blank=True)    
