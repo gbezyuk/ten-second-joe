@@ -7,6 +7,9 @@ Part: Views
 """
 from django.db import models
 import urllib
+from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import ugettext_lazy as _
 import sys
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
@@ -86,3 +89,53 @@ class YoutubeLink(models.Model):
         response = HttpResponse(FLVWrapper(filelike), mimetype='video/x-flv')
         response['Content-Length'] = filelike.info().__dict__['dict']['content-length']
         return response
+
+class LimitedLinkExpired(Exception):
+    pass
+
+class LimitedLink(models.Model):
+    """
+    A link with the limited number of uses model
+    """
+    #link slug
+    slug = models.SlugField(max_length=100, unique=True, blank=False, null=False, verbose_name=_('slug'))
+
+    # activity status and logging
+    enabled = models.BooleanField(default=True, verbose_name=_('enabled'))
+    usages_left = models.PositiveIntegerField(default=0, verbose_name=_('usages left'), blank=False, null=False)
+    usages_count = models.PositiveIntegerField(default=0, verbose_name=_('usages count'), blank=False, null=False)
+
+    #generic foreign key fields bellow
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+
+    def __unicode__(self):
+        return "%d. %s - %s" % (self.pk, self.slug, self.content_object.__unicode__())
+
+    def _log_usage(self):
+        """
+        Updates usage counters
+        """
+        if not self.is_accessible:
+            raise LimitedLinkExpired
+        if self.usages_left:
+            self.usages_left -= 1
+            if not self.usages_left:
+                self.enabled = False
+        self.usages_count += 1
+        self.save()
+
+    @property
+    def is_accessible(self):
+        """
+        Checks if this limited link is still active and accessible
+        """
+        return self.enabled
+
+    def get_access(self):
+        """
+        Return contained object and update usage counters
+        """
+        self._log_usage()
+        return self.content_object
