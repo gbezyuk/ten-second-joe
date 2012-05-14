@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'utils',
     'accounts',
     'main',
+    'tsj',
 )
 
 PROJECT_APPS = (

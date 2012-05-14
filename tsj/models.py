@@ -7,6 +7,9 @@ Part: Views
 """
 from django.db import models
 import urllib
+from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.models import ContentType
+from django.utils.translation import ugettext_lazy as _
 import sys
 
 class AppURLopener(urllib.FancyURLopener):
@@ -56,3 +59,22 @@ class YoutubeLink(models.Model):
         """
         raise NotImplementedError
 
+class LimitedLink(models.Model):
+    """
+    A link with the limited number of uses model
+    """
+    #link slug
+    slug = models.SlugField(max_length=100, unique=True, blank=False, null=False, verbose_name=_('slug'))
+
+    # activity status and logging
+    enabled = models.BooleanField(default=True, verbose_name=_('enabled'))
+    usages_left = models.PositiveIntegerField(default=0, verbose_name=_('usages left'), blank=False, null=False)
+    usages_count = models.PositiveIntegerField(default=0, verbose_name=_('usages count'), blank=False, null=False)
+
+    #generic foreign key fields bellow
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+
+    def __unicode__(self):
+        return "%d. %s - %s" % (self.pk, self.slug, self.content_object.__unicode__())
