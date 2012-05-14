@@ -48,6 +48,8 @@ class YoutubeLink(models.Model):
     url = models.CharField(max_length=255)
     video_cache = models.CharField(max_length=255, null=True, blank=True)
 
+    def __unicode__(self):
+        return "%d. %s" % (self.pk, self.url)
 
     def get_video_link(self):
         """
