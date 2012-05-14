@@ -2,9 +2,9 @@
 - load i18n
 
 - block content
-    - if not error
+    - if link.is_accessible
         - block object_rendering
-            = object
+            = link.get_access
     - else
         = error
         = link

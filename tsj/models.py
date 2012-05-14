@@ -148,6 +148,8 @@ class LimitedLink(models.Model):
         """
         return self.content_object.__class__
 
-    @models.permalink
+#    @models.permalink
     def get_renderer_url(self):
-        return 'tsj_access_youtube_link', (), {'link_slug': self.slug}
+        #return 'tsj_access_youtube_link', (), {'link_slug': self.slug}
+        if self.get_object_type() == YoutubeLink:
+            return self.get_access().get_video_link()
