@@ -59,6 +59,9 @@ class YoutubeLink(models.Model):
         """
         raise NotImplementedError
 
+class LimitedLinkExpired(Exception):
+    pass
+
 class LimitedLink(models.Model):
     """
     A link with the limited number of uses model
@@ -78,3 +81,30 @@ class LimitedLink(models.Model):
 
     def __unicode__(self):
         return "%d. %s - %s" % (self.pk, self.slug, self.content_object.__unicode__())
+
+    def _log_usage(self):
+        """
+        Updates usage counters
+        """
+        if not self.is_accessible:
+            raise LimitedLinkExpired
+        if self.usages_left:
+            self.usages_left -= 1
+            if not self.usages_left:
+                self.enabled = False
+        self.usages_count += 1
+        self.save()
+
+    @property
+    def is_accessible(self):
+        """
+        Checks if this limited link is still active and accessible
+        """
+        return self.enabled
+
+    def get_access(self):
+        """
+        Return contained object and update usage counters
+        """
+        self._log_usage()
+        return self.content_object
