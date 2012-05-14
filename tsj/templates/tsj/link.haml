@@ -1,0 +1,9 @@
+- extends 'base.haml'
+- load i18n
+
+- block content
+    - if not error
+        = object
+    - else
+        = error
+        = link

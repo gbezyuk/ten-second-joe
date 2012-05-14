@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     url(r'^grappelli/', include('grappelli.urls')),
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^accounts/', include('accounts.urls')),
+	url(r'^tsj/', include('tsj.urls')),
 	url(r'^$', HomeView.as_view(), name='home'),
 )
 
