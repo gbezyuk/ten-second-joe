@@ -7,7 +7,7 @@ Part: Tests
 """
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import LimitedLink, LimitedLinkExpired
+from .models import LimitedLink, LimitedLinkExpired, YoutubeLink
 import factory
 
 class UserFactory(factory.Factory):
@@ -27,6 +27,26 @@ class LimitedLinkFactory(factory.Factory):
     slug = 'slug'
     enabled = True
     usages_left = 100
+
+class YoutubeLinkFactory(factory.Factory):
+    """
+    YoutubeLink model factory
+    """
+    FACTORY_FOR = YoutubeLink
+
+    url = 'nOvgJ0TxdfI'
+    video_cache = None
+
+
+
+class YoutubeLinkModelTest(TestCase):
+    """
+    Test on certain youtube video url
+    """
+    def setUp(self):
+        pass
+
+
 
 class LimitedLinkModelTest(TestCase):
     """
