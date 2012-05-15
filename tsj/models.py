@@ -22,21 +22,8 @@ class FLVWrapper(FileWrapper, object):
     """
     Wrapper for flx stream that implements iterator for httpresponse
     """
-    def __init__(self, filelike):
-        self.first_time = True
-        super(FLVWrapper, self).__init__(filelike)
-
 
     def next(self):
-        """
-        if not self.first_time: 
-            data = self.filelike.read(self.blksize) 
-        else:
-            # correct flv format first bytes 
-            data = "FLV\x01\x01\x00\x00\x00\x09\x00\x00\x00\x09" 
-            data += self.filelike.read(self.blksize) 
-            self.first_time = False 
-        """
         data = self.filelike.read(self.blksize) 
         if data: 
             return data 
@@ -154,5 +141,3 @@ class LimitedLink(models.Model):
     @models.permalink
     def get_renderer_url(self):
         return 'tsj_access_youtube_link', (), {'link_slug': self.slug}
-        #if self.get_object_type() == YoutubeLink:
-        #    return self.get_access().get_video_link()
