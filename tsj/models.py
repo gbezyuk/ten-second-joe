@@ -41,6 +41,10 @@ class YoutubeLink(models.Model):
     def __unicode__(self):
         return "%d. %s" % (self.pk, self.url)
 
+    def save(self, **kwargs):
+        self.video_cache = None
+        super(YoutubeLink, self).save(**kwargs)
+
     def get_video_link(self):
         """
         We parse youtube link and set direct link to video file
