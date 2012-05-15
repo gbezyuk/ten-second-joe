@@ -41,8 +41,10 @@ class YoutubeLink(models.Model):
     def __unicode__(self):
         return "%d. %s" % (self.pk, self.url)
 
-    def save(self, **kwargs):
-        self.video_cache = None
+    def save(self, invalidate_video_cache=True, **kwargs):
+        
+        if invalidate_video_cache:
+            self.video_cache = None
         super(YoutubeLink, self).save(**kwargs)
 
     def get_video_link(self):
@@ -50,29 +52,30 @@ class YoutubeLink(models.Model):
         We parse youtube link and set direct link to video file
         """
         if self.video_cache:
+            print 'XXX'
             return self.video_cache
         else:
             opener = AppURLopener()
             fp = opener.open('http://www.youtube.com/get_video_info?video_id={vid}'.format(vid = self.url))
             data = fp.read()
             fp.close()
-
             if data.startswith('status=fail'):
                 raise Exception('Error: Video not found!')
 
             vid_list = []
             tmp_list = urllib.unquote(urllib.unquote(data)).split(',')
+            
             for fmt_chk in tmp_list:
-                if len(fmt_chk) == 0 or not fmt_chk.startswith('url=') and 'flv' not in fmt_chk:
+                if len(fmt_chk) == 0:
+                    continue
+                if not fmt_chk.startswith('url=') and 'type=video/x-flv' not in fmt_chk:
                     continue
                 vid_list.append(fmt_chk[4:])
-
             try:
                 self.video_cache = vid_list[0]
-                self.save()
-            except ValueError:
+                self.save(invalidate_video_cache=False)
+            except KeyError:
                 print 'Failed to parse video urls'
-        
             return self.video_cache
 
     def renderer(self):
