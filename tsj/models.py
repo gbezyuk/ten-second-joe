@@ -52,7 +52,6 @@ class YoutubeLink(models.Model):
         We parse youtube link and set direct link to video file
         """
         if self.video_cache:
-            print 'XXX'
             return self.video_cache
         else:
             opener = AppURLopener()
